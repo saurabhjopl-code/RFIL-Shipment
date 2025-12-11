@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shipment Packing Workflow — Rajnandini Fashion India Ltd</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: #f7f7f7;
+            color: #222;
+        }
+        header {
+            background: #8b0000;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 20px 40px;
+        }
+        h1, h2, h3, h4 {
+            color: #8b0000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        code {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        footer {
+            text-align:center;
+            padding:20px;
+            font-size:0.9rem;
+            color:#666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Shipment Packing Workflow<br>Rajnandini Fashion India Ltd</h1>
+    </header>
+
+    <div class="container">
+
+        <div class="section">
+            <h2>1. Purpose</h2>
+            <p>This document explains the end-to-end business logic for a packing workflow involving two roles — <strong>Creator</strong> and <strong>Packer</strong> — used in Amazon & Flipkart shipment preparation.</p>
+        </div>
+
+        <div class="section">
+            <h2>2. Roles and Permissions</h2>
+            <h3>Creator</h3>
+            <ul>
+                <li>Create shipment drafts using temp shipment ID format: <code>Location + DDMMYYYY</code>.</li>
+                <li>Edit drafts until packing is submitted.</li>
+                <li>Confirm submitted shipments after verifying data.</li>
+                <li>Export Excel reports.</li>
+            </ul>
+            <h3>Packer</h3>
+            <ul>
+                <li>View pending shipments.</li>
+                <li>Open shipment → status becomes <strong>Working</strong>.</li>
+                <li>Scan FNSKU barcodes into auto-created boxes.</li>
+                <li>Close boxes; create new boxes.</li>
+                <li>Submit shipment when packing is complete.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>3. Shipment Status Workflow</h2>
+            <ul>
+                <li><strong>Draft</strong> → Created by Creator.</li>
+                <li><strong>Working</strong> → Packer opens shipment.</li>
+                <li><strong>Submitted</strong> → Packer submits; Creator must confirm.</li>
+                <li><strong>Confirmed</strong> → Final export is generated + email sent.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>4. Packing Logic</h2>
+            <h3>Box Numbering</h3>
+            <p>Boxes auto-create in sequence: <code>BLR5-1</code>, <code>BLR5-2</code>, <code>BLR5-3</code>...</p>
+
+            <h3>Barcode Scan Logic</h3>
+            <ul>
+                <li>Each scan = qty 1.</li>
+                <li>Scan added as line item: Box#, FNSKU, Qty.</li>
+                <li>Live grid shows scanned items.</li>
+                <li>Packer may close a box → system auto-opens next box.</li>
+            </ul>
+
+            <table>
+                <tr><th>Box#</th><th>FNSKU</th><th>Qty</th></tr>
+                <tr><td>BLR5-1</td><td>XYZ</td><td>1</td></tr>
+                <tr><td>BLR5-1</td><td>XYZ</td><td>1</td></tr>
+                <tr><td>BLR5-1</td><td>XYZ</td><td>1</td></tr>
+                <tr><td>BLR5-1</td><td>ABC</td><td>1</td></tr>
+                <tr><td>BLR5-1</td><td>ABC</td><td>1</td></tr>
+                <tr><td>BLR5-1</td><td>ABC</td><td>1</td></tr>
+            </table>
+
+            <p>On Submit → Packer can no longer edit.</p>
+        </div>
+
+        <div class="section">
+            <h2>5. Creator Confirmation</h2>
+            <p>Creator must enter shipment temp ID (e.g., <code>BLR511122025</code>) to confirm.</p>
+            <p>System then:</p>
+            <ul>
+                <li>Generates <strong>Packing ID</strong> (e.g., <code>RAJ-BLR5-20251111-001</code>).</li>
+                <li>Creates consolidated Excel export.</li>
+                <li>Emails final file to operations team.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>6. Consolidated Export Format</h2>
+            <table>
+                <tr><th>Box#</th><th>FNSKU</th><th>Qty</th></tr>
+                <tr><td>BLR5-1</td><td>XYZ</td><td>3</td></tr>
+                <tr><td>BLR5-1</td><td>ABC</td><td>3</td></tr>
+                <tr><td>BLR5-1</td><td>QWE</td><td>3</td></tr>
+                <tr><td>BLR5-2</td><td>XYZ</td><td>3</td></tr>
+                <tr><td>BLR5-2</td><td>ABC</td><td>3</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>7. Edge Cases</h2>
+            <ul>
+                <li>Over-scan (scanned qty > expected) → block submit.</li>
+                <li>Offline scanning → local autosave.</li>
+                <li>Wrong FNSKU → flag for manual review.</li>
+                <li>Creator can edit only before confirmation.</li>
+            </ul>
+        </div>
+
+    </div>
+    <footer>
+        &copy; Rajnandini Fashion India Ltd
+    </footer>
+</body>
+</html>

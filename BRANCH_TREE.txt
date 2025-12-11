@@ -1,0 +1,12 @@
+Branch tree (suggested)
+- main
+  - docs/
+    - index.html
+  - assets/
+    - logo.svg
+  - README.md
+  - LICENSE
+  - .gitignore
+
+Optional:
+- gh-pages (if you prefer publishing from a separate branch)
