@@ -1,1 +1,0 @@
-// Packer dashboard logic placeholder
