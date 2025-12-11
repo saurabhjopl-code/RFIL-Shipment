@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Creator - RFIL Shipment</title></head>
+<body style="font-family:Arial, sans-serif;max-width:900px;margin:20px auto;">
+<h1>Creator Dashboard</h1>
+<p>Simple view of shipments. Click Refresh to load shipments from Google Sheets.</p>
+<button onclick="loadShipments()">Refresh</button>
+<button onclick="showCreate()">New Shipment</button>
+<div id="createForm" style="display:none;margin-top:10px">
+  <h3>Create Shipment</h3>
+  <label>Shipment ID: <input id="newShipmentId"></label><br><br>
+  <label>Location: <input id="newLocation"></label><br><br>
+  <label>Total Qty: <input id="newQty" type="number"></label><br><br>
+  <button onclick="createShipment()">Create</button>
+  <button onclick="hideCreate()">Cancel</button>
+</div>
+<pre id="out" style="background:#f7f7f7;padding:10px;border:1px solid #ddd;height:400px;overflow:auto"></pre>
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyNchy_xLKMK_kGkkW8eMfKN-RVI942bl45O35T6Am2h6-CGPJo0hVUcxN1EfYSD2-ifA/exec';
+
+async function loadShipments(){
+  const res = await fetch(API_URL + '?action=listShipments');
+  const data = await res.json();
+  document.getElementById('out').textContent = JSON.stringify(data, null, 2);
+}
+
+function showCreate(){ document.getElementById('createForm').style.display='block'; }
+function hideCreate(){ document.getElementById('createForm').style.display='none'; }
+
+async function createShipment(){
+  const payload = {
+    action: 'createShipment',
+    data: {
+      shipment_id: document.getElementById('newShipmentId').value,
+      location: document.getElementById('newLocation').value,
+      total_qty_expected: parseInt(document.getElementById('newQty').value,10) || ''
+    }
+  };
+  const res = await fetch(API_URL, {method:'POST', body: JSON.stringify(payload)});
+  const j = await res.json();
+  alert(JSON.stringify(j));
+  hideCreate();
+  loadShipments();
+}
+</script>
+</body>
+</html>

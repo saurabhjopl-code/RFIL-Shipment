@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Packer - RFIL Shipment</title></head>
+<body style="font-family:Arial, sans-serif;max-width:720px;margin:10px auto;">
+<h1>Packer Dashboard (Mobile)</h1>
+<p>Enter Shipment ID and scan/enter FNSKU. Click Save to append to sheet.</p>
+<label>Shipment ID: <input id="shipmentId"></label><br><br>
+<label>Box ID: <input id="boxId" placeholder="e.g., BLR5-1"></label><br><br>
+<label>FNSKU: <input id="fnsku"></label><br><br>
+<button onclick="postScan()">Save Scan</button>
+<button onclick="submitShipment()">Submit Shipment</button>
+<pre id="log" style="background:#f7f7f7;padding:10px;border:1px solid #ddd;height:300px;overflow:auto"></pre>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyNchy_xLKMK_kGkkW8eMfKN-RVI942bl45O35T6Am2h6-CGPJo0hVUcxN1EfYSD2-ifA/exec';
+
+async function postScan(){
+  const payload = {
+    action:'postScan',
+    data: {
+      scan_id: crypto.randomUUID(),
+      shipmentId: document.getElementById('shipmentId').value.trim(),
+      box_id: document.getElementById('boxId').value.trim(),
+      fnsku: document.getElementById('fnsku').value.trim(),
+      qty: 1
+    }
+  };
+  const res = await fetch(API_URL, {method:'POST', body: JSON.stringify(payload)});
+  const j = await res.json();
+  document.getElementById('log').textContent = JSON.stringify(j, null, 2) + '\n' + document.getElementById('log').textContent;
+}
+
+async function submitShipment(){
+  const shipmentId = document.getElementById('shipmentId').value.trim();
+  const payload = { action:'submitShipment', shipmentId: shipmentId };
+  const res = await fetch(API_URL, {method:'POST', body: JSON.stringify(payload)});
+  const j = await res.json();
+  document.getElementById('log').textContent = JSON.stringify(j, null, 2) + '\n' + document.getElementById('log').textContent;
+}
+</script>
+</body>
+</html>
